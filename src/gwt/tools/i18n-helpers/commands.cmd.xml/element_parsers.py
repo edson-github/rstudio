@@ -156,7 +156,7 @@ class Menu(ElementParser):
     def lineage(self, path_delimiter: str = '/'):
         """Custom lineage for menu elements which roots at 'main'"""
         if self._lineage is None:
-            self._lineage = f"main{path_delimiter}" + get_lineage(self._xml_element)
+            self._lineage = f"main{path_delimiter}{get_lineage(self._xml_element)}"
 
             # Remove trailing delimiters (can happen if this is straight off 'main'
             self._lineage = self._lineage.rstrip(path_delimiter)
@@ -258,9 +258,8 @@ def get_lineage(e: ElementTree):
     parent = e.getparent()
     if parent is None:
         return ""
-    else:
-        grandparents = get_lineage(parent)
-        if grandparents:
-            grandparents += "/"
-        return grandparents + parent.attrib.get('label', "")
+    grandparents = get_lineage(parent)
+    if grandparents:
+        grandparents += "/"
+    return grandparents + parent.attrib.get('label', "")
 

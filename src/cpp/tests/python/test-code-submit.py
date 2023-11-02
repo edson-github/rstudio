@@ -26,7 +26,7 @@ def test():
    second = "second"
 
    # Let's try to print it.
-   print(first + " " + second)
+   print(f"{first} {second}")
    
 test()
 

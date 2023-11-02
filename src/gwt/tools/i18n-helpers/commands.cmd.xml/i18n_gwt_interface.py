@@ -23,11 +23,10 @@ class Constant:
         self.default_value = default_value
 
     def to_lines(self):
-        lines = [
+        return [
             DEFAULT_STRING_TEMPLATE.format(text=self.default_value),
             PROPERTY_DEFINITION_TEMPLATE.format(name=self.name),
         ]
-        return lines
 
 
 class Text:
@@ -95,10 +94,7 @@ class I18NGwtConstantsInterfaceGenerator:
         if not constant and not all(name, default_value) and not string:
             raise ValueError("Either constant, name and default_value, or string must be specified")
         if constant is None:
-            if string is not None:
-                constant = Text(string)
-            else:
-                constant = Constant(name, default_value)
+            constant = Constant(name, default_value) if string is None else Text(string)
         self.constants.append(constant)
 
     def add_header_auto_generated(self, filename):
@@ -113,26 +109,21 @@ class I18NGwtConstantsInterfaceGenerator:
         # Translate constants to lists of the java statements that creates them
         constants_unflattened = [c.to_lines() for c in self.constants]
 
-        # Flatten commands from nested lists (per constant) to single list of java statements
-        statements = [line for command in constants_unflattened for line in command]
-        return statements
+        return [line for command in constants_unflattened for line in command]
 
     def write(self, filename, add_newlines=True):
         lines = self.headers + self.packages + self.imports + [""]
 
         # Build the interface definition, indenting the inner statements
         interface_lines = \
-            [INTERFACE_DEFINITION_START.format(name=self.name)] \
-            + indent_to(self.constants_to_lines(), indent_level=1) \
-            + [INTERFACE_DEFINITION_END]
+                [INTERFACE_DEFINITION_START.format(name=self.name)] \
+                + indent_to(self.constants_to_lines(), indent_level=1) \
+                + [INTERFACE_DEFINITION_END]
 
         lines.extend(interface_lines)
 
         with open(filename, 'w') as fout:
-            if add_newlines:
-                join_on = "\n"
-            else:
-                join_on = ""
+            join_on = "\n" if add_newlines else ""
             lines = join_on.join(lines)
             fout.write(lines)
 
@@ -167,10 +158,7 @@ class I18NGwtPropertiesGenerator:
         self.properties.append(prop)
 
     def write(self, filename: str, add_newlines: bool = True):
-        if add_newlines:
-            join_on = "\n"
-        else:
-            join_on = ""
+        join_on = "\n" if add_newlines else ""
         lines = join_on.join(self.headers +
                              [str(p) for p in self.properties]  # Convert to formatted strings
                              )

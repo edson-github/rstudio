@@ -40,11 +40,12 @@ def parse_args():
                         help=f"Type of file to output.  Must be one of {OUTPUT_TYPES}"
                         )
     parser.add_argument("output_path", type=str, help="Filename to output")
-    parser.add_argument("--prefix",
-                        type=str,
-                        default="",
-                        help=f"Text prefix used to prepend all output text values.  Useful to visually "
-                             f"highlight when a default text statement is used vs a translated one during debugging")
+    parser.add_argument(
+        "--prefix",
+        type=str,
+        default="",
+        help='Text prefix used to prepend all output text values.  Useful to visually highlight when a default text statement is used vs a translated one during debugging',
+    )
     parser.add_argument("--packages", "--package",
                         default=[],
                         action='append',
